@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import {
+    motion,
+    useMotionValue,
+    useScroll,
+    useTransform,
+    useViewportScroll,
+} from "framer-motion";
 import { useEffect, useRef } from "react";
 /* 
   framer motion
@@ -49,16 +55,19 @@ import { useEffect, useRef } from "react";
   값 설정 방법: x.set(), useTransform
 - useTransform : 특정 값의 변화에 따라 변화 비율에 맞는 다른 값 리턴. = interpolation
   const scale = useTransform(x, [-200, 0, 200], [2, 1, 0.1]);
+  - useScroll: scroll의 motionValue 를 리턴. 
+  scrollX/Y= scrolled pixel amount
+  scrollX/YProgress= 0 ~ 1 사이 % 값
 
 */
 
-const Wrapper = styled.div`
-    height: 100vh;
+const Wrapper = styled(motion.div)`
+    height: 200vh;
     width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #89eacb, #13312a);
+    background: linear-gradient(135deg, rgb(137, 234, 203), rgb(255, 178, 91));
 `;
 
 const Box = styled(motion.div)`
@@ -71,14 +80,27 @@ const Box = styled(motion.div)`
 
 function App() {
     const x = useMotionValue(0);
-    const scale = useTransform(x, [-200, 0, 200], [2, 1, 0.1]); //interpolation
+    // const scale = useTransform(x, [-200, 0, 200], [2, 1, 0.1]);
+    const rotateZ = useTransform(x, [-200, 200], [-360, 360]);
+    const gradient = useTransform(
+        x,
+        [-200, 200],
+        [
+            "linear-gradient(135deg, rgb(234, 137, 194), rgb(165, 68, 249))",
+            "linear-gradient(135deg, rgb(234, 232, 137), rgb(134, 181, 255))",
+        ]
+    );
+    const { scrollY, scrollYProgress } = useScroll();
+    const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
     useEffect(() => {
-        // x.onChange(() => console.log(x.get()));
-        scale.onChange(() => console.log(scale.get()));
-    }, [scale]);
+        scrollY.on("change", function () {
+            console.log(scrollY.get(), scrollYProgress.get());
+        });
+    }, [scrollY, scrollYProgress]);
+
     return (
-        <Wrapper>
-            <Box style={{ x, scale }} drag="x" dragSnapToOrigin />
+        <Wrapper style={{ background: gradient }}>
+            <Box style={{ x, rotateZ, scale }} drag="x" dragSnapToOrigin />
         </Wrapper>
     );
 }
