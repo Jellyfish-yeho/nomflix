@@ -16,6 +16,12 @@ import { motion } from "framer-motion";
       />
     물리 법칙 적용과 유사한 원리로 동작
 
+
+  - variants
+    애니메이션의 한 stage. 일일이 적었던 설정값들을 분리된 object로 옮김으로써 코드 정리 및 간결화 가능. 이름도 내맘대로 지정 가능.
+    object에 사용할 animation 정의 후, 
+    태그에 해당 object를 variant로 지정해 준다
+    <Box variants={myVars} initial="start" animate="end" />
 */
 
 const Wrapper = styled.div`
@@ -35,14 +41,15 @@ const Box = styled(motion.div)`
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
+const myVars = {
+    start: { scale: 0 },
+    end: { scale: 1, rotateZ: 360, transition: { type: "spring", delay: 1 } },
+};
+
 function App() {
     return (
         <Wrapper>
-            <Box
-                transition={{ type: "spring", delay: 1 }}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1, rotateZ: 360 }}
-            />
+            <Box variants={myVars} initial="start" animate="end" />
         </Wrapper>
     );
 }
