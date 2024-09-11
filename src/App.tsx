@@ -32,6 +32,10 @@ import { duration } from "moment";
   - while~ prop: 특정 상태에 애니메이션 지정(ex.hover)
 
   * 색상값들은 rgba 나 hex같은 numeric value를 넣어야 애니메이션이 발생한다. (점진적 변화)
+
+  - drag: 요소 드래그 활성화. x, y 로 수평/수직 방향 제한 가능
+  - dragConstraints: 드래그 범위 제한. top/bottom/left/right 범위 지정 가능. 값을 모두 0으로 하면 중앙으로 되돌아가진다!
+
 */
 
 const Wrapper = styled.div`
@@ -41,6 +45,17 @@ const Wrapper = styled.div`
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #89eacb, #13312a);
+`;
+
+const BiggerBox = styled.div`
+    width: 600px;
+    height: 600px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 `;
 
 const Box = styled(motion.div)`
@@ -54,19 +69,20 @@ const Box = styled(motion.div)`
 const boxVariants = {
     hover: { scale: 1.5, rotateZ: 90 },
     click: { scale: 1, borderRadius: "100px" },
-    drag: { backgroundColor: "rgb(46,204,113)", transition: { duration: 3 } },
 };
 
 function App() {
     return (
         <Wrapper>
-            <Box
-                drag
-                variants={boxVariants}
-                whileHover="hover"
-                whileTap="click"
-                whileDrag="drag"
-            />
+            <BiggerBox>
+                <Box
+                    drag
+                    dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+                    variants={boxVariants}
+                    whileHover="hover"
+                    whileTap="click"
+                />
+            </BiggerBox>
         </Wrapper>
     );
 }
