@@ -17,7 +17,6 @@ import { duration } from "moment";
       />
     물리 법칙 적용과 유사한 원리로 동작
 
-
   - variants
     애니메이션의 한 stage. 일일이 적었던 설정값들을 분리된 object로 옮김으로써 코드 정리 및 간결화 가능. 이름도 내맘대로 지정 가능.
     object에 사용할 animation 정의 후, 
@@ -31,6 +30,8 @@ import { duration } from "moment";
   - orchestration: 자식 요소에 ani 지정 가능
 
   - while~ prop: 특정 상태에 애니메이션 지정(ex.hover)
+
+  * 색상값들은 rgba 나 hex같은 numeric value를 넣어야 애니메이션이 발생한다. (점진적 변화)
 */
 
 const Wrapper = styled.div`
@@ -53,12 +54,19 @@ const Box = styled(motion.div)`
 const boxVariants = {
     hover: { scale: 1.5, rotateZ: 90 },
     click: { scale: 1, borderRadius: "100px" },
+    drag: { backgroundColor: "rgb(46,204,113)", transition: { duration: 3 } },
 };
 
 function App() {
     return (
         <Wrapper>
-            <Box variants={boxVariants} whileHover="hover" whileTap="click" />
+            <Box
+                drag
+                variants={boxVariants}
+                whileHover="hover"
+                whileTap="click"
+                whileDrag="drag"
+            />
         </Wrapper>
     );
 }
