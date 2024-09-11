@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useRef } from "react";
+import { motion, useMotionValue } from "framer-motion";
+import { useEffect, useRef } from "react";
 /* 
   framer motion
   https://www.framer.com/docs/animation
@@ -11,11 +11,11 @@ import { useRef } from "react";
     const Box = styled(motion.div)``
   
   - animation 넣기
-     <Box
-          transition={{ delay: 3, duration: 3 }}
-          animate={{ borderRadius: "100px" }}
-      />
-    물리 법칙 적용과 유사한 원리로 동작
+    <Box
+      transition={{ delay: 3, duration: 3 }}
+      animate={{ borderRadius: "100px" }}
+    />
+  물리 법칙 적용과 유사한 원리로 동작
 
   - variants
     애니메이션의 한 stage. 일일이 적었던 설정값들을 분리된 object로 옮김으로써 코드 정리 및 간결화 가능. 이름도 내맘대로 지정 가능.
@@ -38,6 +38,16 @@ import { useRef } from "react";
   특정 요소 안에서만 가능하게 하려면 해당 요소에 ref를 등록 후 이를 dragConstraint로 지정하면 됨.
   - dragSnapToOrigin: dragConstraints에서 값을 0으로 한것과 같은 효과. 중앙으로 되돌아감.
   - dragElastic: 드래그에 저항하는 힘. 0 과 1사이의 값.
+
+  - motionValue : 애니메이션 수치 트래킹
+  이 값이 업데이트되어도, react의 rendering cycle을 trigger시키지 않는다. 즉, motionValue는 state값이 아님.
+  값 확인 방법: useMotionValue의 기본값 0으로 설정, css에 넣어주기, x.get()
+  const x = useMotionValue(0); 
+  useEffect(() => { x.onChange(() => console.log(x.get()));}, [x]);
+  <Box style={{ x }} drag="x" dragSnapToOrigin />
+  -> style이 바뀌면 x값도 바뀜.
+  값 설정 방법: x.set()
+
 */
 
 const Wrapper = styled.div`
@@ -49,17 +59,6 @@ const Wrapper = styled.div`
     background: linear-gradient(135deg, #89eacb, #13312a);
 `;
 
-const BiggerBox = styled.div`
-    width: 600px;
-    height: 600px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-radius: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* overflow: hidden; */
-`;
-
 const Box = styled(motion.div)`
     width: 100px;
     height: 100px;
@@ -68,26 +67,15 @@ const Box = styled(motion.div)`
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
-const boxVariants = {
-    hover: { scale: 1.5, rotateZ: 90 },
-    click: { scale: 1, borderRadius: "100px" },
-};
-
 function App() {
-    const biggerBoxRef = useRef<HTMLDivElement>(null);
+    const x = useMotionValue(0);
+    useEffect(() => {
+        x.onChange(() => console.log(x.get()));
+    }, [x]);
     return (
         <Wrapper>
-            <BiggerBox ref={biggerBoxRef}>
-                <Box
-                    drag
-                    dragSnapToOrigin
-                    dragElastic={0.5}
-                    dragConstraints={biggerBoxRef}
-                    variants={boxVariants}
-                    whileHover="hover"
-                    whileTap="click"
-                />
-            </BiggerBox>
+            <button onClick={() => x.set(200)}>click me</button>
+            <Box style={{ x }} drag="x" dragSnapToOrigin />
         </Wrapper>
     );
 }
