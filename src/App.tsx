@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useEffect, useRef } from "react";
 /* 
   framer motion
@@ -46,7 +46,9 @@ import { useEffect, useRef } from "react";
   useEffect(() => { x.onChange(() => console.log(x.get()));}, [x]);
   <Box style={{ x }} drag="x" dragSnapToOrigin />
   -> style이 바뀌면 x값도 바뀜.
-  값 설정 방법: x.set()
+  값 설정 방법: x.set(), useTransform
+- useTransform : 특정 값의 변화에 따라 변화 비율에 맞는 다른 값 리턴. = interpolation
+  const scale = useTransform(x, [-200, 0, 200], [2, 1, 0.1]);
 
 */
 
@@ -69,13 +71,14 @@ const Box = styled(motion.div)`
 
 function App() {
     const x = useMotionValue(0);
+    const scale = useTransform(x, [-200, 0, 200], [2, 1, 0.1]); //interpolation
     useEffect(() => {
-        x.onChange(() => console.log(x.get()));
-    }, [x]);
+        // x.onChange(() => console.log(x.get()));
+        scale.onChange(() => console.log(scale.get()));
+    }, [scale]);
     return (
         <Wrapper>
-            <button onClick={() => x.set(200)}>click me</button>
-            <Box style={{ x }} drag="x" dragSnapToOrigin />
+            <Box style={{ x, scale }} drag="x" dragSnapToOrigin />
         </Wrapper>
     );
 }
