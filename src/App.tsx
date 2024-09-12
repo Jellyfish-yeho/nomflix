@@ -2,14 +2,6 @@ import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
-/*
-  layout : 이 속성을 준 element의 layout이 바뀔 때, 자동으로 animate 된다 ㄷㄷㄷ
-  - framerMotion이 css 변화를 감지
-  
-  layoutId : 같은 id를 가진 요소를 같은 component로 인식하여 animation을 준다
-
-*/
-
 const Wrapper = styled(motion.div)`
     height: 100vh;
     width: 100vw;
@@ -19,8 +11,18 @@ const Wrapper = styled(motion.div)`
     background: linear-gradient(135deg, rgb(137, 234, 203), rgb(255, 178, 91));
 `;
 
+const Grid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 50vw;
+    gap: 10px;
+    div:first-child,
+    div:last-child {
+        grid-column: span 2;
+    }
+`;
+
 const Box = styled(motion.div)`
-    width: 400px;
     height: 400px;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 40px;
@@ -31,32 +33,40 @@ const Box = styled(motion.div)`
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
-const Circle = styled(motion.div)`
-    background-color: #cc00ff;
-    width: 100px;
-    height: 100px;
-    border-radius: 50px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+const Overlay = styled(motion.div)`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 function App() {
     const [clicked, setClicked] = useState(false);
-    const toggleClicked = () => setClicked((prev) => !prev);
+    const toggle = () => setClicked((prev) => !prev);
     return (
-        <Wrapper onClick={toggleClicked}>
-            <Box>
-                {!clicked ? (
-                    <Circle layoutId="circle" style={{ borderRadius: 50 }} />
-                ) : null}
-            </Box>
-            <Box>
+        <Wrapper onClick={toggle}>
+            <Grid>
+                <Box layoutId="hello" />
+                <Box />
+                <Box />
+                <Box />
+            </Grid>
+            <AnimatePresence>
                 {clicked ? (
-                    <Circle
-                        layoutId="circle"
-                        style={{ borderRadius: 0, scale: 2 }}
-                    />
+                    <Overlay
+                        initial={{ backgroundColor: "rgba(0,0,0,0)" }}
+                        animate={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+                        exit={{ backgroundColor: "rgba(0,0,0,0)" }}
+                    >
+                        <Box
+                            layoutId="hello"
+                            style={{ width: 400, height: 200 }}
+                        />
+                    </Overlay>
                 ) : null}
-            </Box>
+            </AnimatePresence>
         </Wrapper>
     );
 }
